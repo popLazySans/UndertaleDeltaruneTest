@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>คุณเหมือนใครใน Undertale / Deltarune</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #EFEBFA;
+    --panel: #FFFFFF;
+    --ink: #1C1736;
+    --muted: #5F5885;
+    --line: #1C1736;
+    --soft: #DAD3F0;
+    --gold: #8A5B00;
+    --gold-fill: #F2BC2E;
+    --teal: #0B7F72;
+    --on-gold: #1C1736;
+    --display: "Chakra Petch", "Leelawadee UI", Thonburi, Tahoma, sans-serif;
+    --body: "IBM Plex Sans Thai", "Leelawadee UI", Thonburi, Tahoma, sans-serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #15122C;
+      --panel: #1E1A40;
+      --ink: #F2EDFF;
+      --muted: #A9A1D0;
+      --line: #F2EDFF;
+      --soft: #3A3468;
+      --gold: #F5C84B;
+      --gold-fill: #F5C84B;
+      --teal: #5AD6C5;
+      --on-gold: #15122C;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #15122C;
+    --panel: #1E1A40;
+    --ink: #F2EDFF;
+    --muted: #A9A1D0;
+    --line: #F2EDFF;
+    --soft: #3A3468;
+    --gold: #F5C84B;
+    --gold-fill: #F5C84B;
+    --teal: #5AD6C5;
+    --on-gold: #15122C;
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  main {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: clamp(1.25rem, 5vw, 3.5rem) 1.125rem 3rem;
+  }
+
+  h1, h2, h3 { font-family: var(--display); line-height: 1.25; margin: 0; }
+  p { margin: 0; }
+
+  /* the dialogue box: the one loud element on the page */
+  .box {
+    background: var(--panel);
+    border: 3px solid var(--line);
+    outline: 3px solid var(--panel);
+    box-shadow: 0 0 0 6px var(--line);
+    margin: 6px;
+    padding: clamp(1.25rem, 4.5vw, 2.25rem);
+  }
+
+  /* intro */
+  .intro h1 { font-size: clamp(1.9rem, 7.5vw, 3rem); font-weight: 700; }
+  .intro .games { color: var(--gold); display: block; }
+  .intro p { margin-top: 1.1rem; max-width: 34em; }
+  .intro .rule { color: var(--muted); }
+  .note { margin: 1.75rem 6px 0; color: var(--muted); font-size: 0.9rem; }
+
+  .btn {
+    font: 700 1.0625rem/1.3 var(--display);
+    color: var(--on-gold);
+    background: var(--gold-fill);
+    border: 3px solid var(--line);
+    padding: 0.8rem 1.4rem;
+    cursor: pointer;
+    margin-top: 1.75rem;
+  }
+  .btn.quiet {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--soft);
+    font-weight: 500;
+  }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--line); }
+  .btn.quiet:hover { border-color: var(--line); }
+  :focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+
+  /* progress */
+  .progress { display: flex; gap: 5px; margin: 0 6px 1.5rem; }
+  .progress i { flex: 1; height: 8px; background: var(--soft); }
+  .progress i.done { background: var(--gold-fill); }
+  .progress i.now { background: var(--ink); }
+  .count { font-family: var(--display); color: var(--muted); font-size: 0.95rem; margin-bottom: 0.6rem; }
+
+  .question { font-size: clamp(1.25rem, 4.6vw, 1.6rem); font-weight: 700; }
+  .choices { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+  .choices li + li { margin-top: 0.35rem; }
+  .choice {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    align-items: baseline;
+    width: 100%;
+    text-align: left;
+    font: 500 1.0625rem/1.55 var(--body);
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    padding: 0.7rem 0.6rem 0.7rem 0.25rem;
+    cursor: pointer;
+  }
+  .choice::before { content: "▸"; color: transparent; font-family: var(--display); }
+  .choice:hover::before, .choice:focus-visible::before, .choice.picked::before { color: var(--gold); }
+  .choice:hover, .choice.picked { background: color-mix(in srgb, var(--gold-fill) 16%, transparent); }
+  .back {
+    font: 500 0.95rem var(--body);
+    color: var(--muted);
+    background: none;
+    border: 0;
+    padding: 0.5rem 0;
+    margin: 1.25rem 6px 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .back[hidden] { display: none; }
+
+  /* result */
+  .lead { font-family: var(--display); color: var(--muted); }
+  .name { font-size: clamp(2.8rem, 15vw, 5.25rem); font-weight: 700; line-height: 1; margin: 0.25rem 0 0.5rem; letter-spacing: -0.01em; }
+  .from { font-family: var(--display); color: var(--gold); }
+  .tagline { font: 700 1.3rem/1.4 var(--display); margin-top: 1.4rem; }
+  .desc { margin-top: 0.6rem; }
+  .pair { margin-top: 1.1rem; display: grid; gap: 0.4rem; }
+  .pair b { font-family: var(--display); }
+  .pair .good b { color: var(--teal); }
+  .pair .care b { color: var(--gold); }
+
+  section.block { margin: 2.5rem 6px 0; }
+  section.block h2 { font-size: 1.2rem; font-weight: 700; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+  .legend span::before {
+    content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 0.45rem;
+    transform: rotate(45deg) translateY(-1px);
+  }
+  .legend .you::before { background: var(--ink); }
+  .legend .them::before { border: 2px solid var(--gold); }
+
+  .axis { margin-top: 1.15rem; }
+  .axis .poles { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.95rem; }
+  .axis .poles span:last-child { text-align: right; }
+  .track { position: relative; height: 18px; margin: 0.3rem 7px 0; }
+  .track::before { content: ""; position: absolute; left: -7px; right: -7px; top: 8px; height: 2px; background: var(--soft); }
+  .track::after { content: ""; position: absolute; left: 50%; top: 3px; width: 2px; height: 12px; background: var(--soft); }
+  .dot { position: absolute; top: 3px; width: 12px; height: 12px; margin-left: -6px; transform: rotate(45deg); z-index: 1; }
+  .dot.you { background: var(--ink); }
+  .dot.them { border: 2px solid var(--gold); background: var(--page); }
+
+  .others { list-style: none; margin: 0.75rem 0 0; padding: 0; }
+  .others li {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
+    padding: 0.6rem 0; border-bottom: 2px solid var(--soft);
+  }
+  .others .who { font-family: var(--display); font-weight: 700; }
+  .others .who small { font-weight: 500; color: var(--muted); font-size: 0.85rem; margin-left: 0.5rem; }
+  .others .pct { font-family: var(--display); color: var(--muted); white-space: nowrap; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 0 0.75rem; margin: 1rem 6px 0; }
+  .status { margin: 0.75rem 6px 0; color: var(--muted); font-size: 0.9rem; min-height: 1.5em; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal .name { animation: land 0.5s cubic-bezier(.2, .9, .3, 1.2) both; }
+    @keyframes land { from { opacity: 0; transform: translateY(0.4em) scale(0.96); } }
+  }
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script id="core">
+/* Trait axes, each scored from -2 to +2
+   E quiet … expressive      B avoids conflict … confronts
+   O spontaneous … orderly   T guarded … open
+   C doubtful … confident    N self-reliant … caretaking
+   P serious … playful                                        */
+const AXES = [
+  { k: "E", lo: "เก็บตัว", hi: "แสดงออก" },
+  { k: "B", lo: "เลี่ยงการปะทะ", hi: "ชนตรง ๆ" },
+  { k: "O", lo: "ไปตามสถานการณ์", hi: "มีแบบแผน" },
+  { k: "T", lo: "เก็บความรู้สึก", hi: "เปิดเผย" },
+  { k: "C", lo: "ลังเล", hi: "มั่นใจ" },
+  { k: "N", lo: "พึ่งตัวเอง", hi: "ดูแลคนอื่น" },
+  { k: "P", lo: "จริงจัง", hi: "ขี้เล่น" }
+];
+
+const CHARACTERS = [
+  { name: "Sans", from: "Undertale", v: { E: -1, B: -1, O: -2, T: -2, C: 1, N: 1, P: 2 },
+    tag: "นิ่งข้างนอก คิดลึกข้างใน",
+    desc: "คุณดูสบาย ๆ ไม่เร่งรีบ และใช้มุกตลกเป็นภาษาหลัก แต่จริง ๆ แล้วสังเกตทุกอย่างและรู้มากกว่าที่พูดออกมา เรื่องหนัก ๆ คุณเก็บไว้กับตัว ส่วนคนสำคัญ คุณดูแลแบบไม่ประกาศ",
+    good: "ใจเย็น อ่านคนขาด ทำให้บรรยากาศเบาลงได้เสมอ",
+    care: "ผัดวันประกันพรุ่ง และไม่ยอมให้ใครเห็นว่าตัวเองเหนื่อย" },
+  { name: "Papyrus", from: "Undertale", v: { E: 2, B: 0, O: 1, T: 2, C: 2, N: 1, P: 1 },
+    tag: "มั่นใจเต็มร้อย จริงใจเต็มร้อย",
+    desc: "คุณเชื่อในตัวเองและเชื่อในคนอื่นพอ ๆ กัน คิดอะไรก็พูดอย่างนั้น ลงแรงกับทุกเรื่องเกินร้อย และมองเห็นข้อดีในคนที่คนอื่นตัดสินไปแล้ว",
+    good: "มองโลกในแง่ดี ไม่ยอมแพ้ ทำให้คนรอบตัวมีกำลังใจ",
+    care: "เชื่อคนง่าย และบางทีก็มองข้ามสัญญาณเตือน" },
+  { name: "Toriel", from: "Undertale", v: { E: 0, B: 0, O: 1, T: 1, C: 1, N: 2, P: 0 },
+    tag: "ผู้ใหญ่ที่ใคร ๆ ก็อยากมีอยู่ใกล้ตัว",
+    desc: "การดูแลคนอื่นเป็นสัญชาตญาณของคุณ คุณใจเย็น มีหลักการ และยืนหยัดได้เมื่อเรื่องนั้นสำคัญจริง ๆ แถมมีอารมณ์ขันแบบมุกแป้กที่ตัวเองขำก่อนใคร",
+    good: "อบอุ่น พึ่งพาได้ มั่นคง",
+    care: "ห่วงมากจนบางครั้งปกป้องเกินจำเป็น" },
+  { name: "Undyne", from: "Undertale", v: { E: 2, B: 2, O: 1, T: 2, C: 2, N: 1, P: 0 },
+    tag: "ชนตรง ๆ ไม่มีอ้อม",
+    desc: "คุณพลังล้น กล้าปะทะ และรู้สึกอะไรก็แสดงออกหมด เมื่อมีคนที่ต้องปกป้อง คุณทุ่มสุดตัว และความฮึกเหิมของคุณก็ติดต่อไปถึงคนรอบข้าง",
+    good: "กล้าหาญ ซื่อตรง เป็นผู้นำโดยธรรมชาติ",
+    care: "ใจร้อน ลงมือก่อนคิดให้จบ" },
+  { name: "Alphys", from: "Undertale", v: { E: -2, B: -2, O: 0, T: -1, C: -2, N: 1, P: 0 },
+    tag: "เก่งกว่าที่ตัวเองเชื่อ",
+    desc: "คุณคิดเยอะ ละเอียด และใส่ใจคนอื่นมาก แต่ไม่ค่อยมั่นใจในตัวเอง คุณเลี่ยงการปะทะ และมักเก็บความกังวลไว้คนเดียว",
+    good: "ช่างคิด ใส่ใจรายละเอียด เห็นอกเห็นใจ",
+    care: "โทษตัวเองหนักเกินไป และปิดปัญหาไว้จนมันใหญ่ขึ้น" },
+  { name: "Mettaton", from: "Undertale", v: { E: 2, B: 1, O: 2, T: -1, C: 2, N: -2, P: 0 },
+    tag: "เกิดมาเพื่ออยู่กลางเวที",
+    desc: "คุณมั่นใจ ไม่เขินที่จะเป็นจุดสนใจ รู้ว่าตัวเองต้องการอะไรและวางแผนไปให้ถึง คุณกล้าเลือกทางของตัวเองแม้ต้องเดินคนเดียว",
+    good: "ทะเยอทะยาน มีเสน่ห์ ลงมือจริง",
+    care: "จดจ่อกับเป้าหมายจนลืมคนที่อยู่ข้างหลัง" },
+  { name: "Asgore", from: "Undertale", v: { E: -1, B: -2, O: 0, T: -1, C: -1, N: 2, P: -1 },
+    tag: "ใจดีจนแบกทุกอย่างไว้เอง",
+    desc: "คุณอ่อนโยน ไม่ชอบความขัดแย้ง และรู้สึกรับผิดชอบต่อคนอื่นสูงมาก ความหนักใจคุณมักเก็บไว้เงียบ ๆ แล้วทำหน้าที่ต่อไป",
+    good: "เมตตา อดทน ใส่ใจทุกคน",
+    care: "เลี่ยงการตัดสินใจยาก ๆ จนเรื่องค้างคา" },
+  { name: "Kris", from: "Deltarune", v: { E: -2, B: 0, O: -1, T: -2, C: 0, N: -1, P: 1 },
+    tag: "เงียบ แต่ไม่ได้ว่างเปล่า",
+    desc: "คุณพูดน้อยและเก็บความรู้สึกเก่งจนคนอ่านไม่ค่อยออก แต่ข้างในมีความคิดของตัวเองชัดเจน บวกกับอารมณ์ขันแบบแกล้งคนหน้าตาย คุณทำอะไรตามจังหวะของตัวเอง",
+    good: "สังเกตเก่ง เป็นตัวของตัวเอง",
+    care: "ปิดตัวจนคนใกล้ชิดเข้าไม่ถึง" },
+  { name: "Susie", from: "Deltarune", v: { E: 1, B: 2, O: -2, T: -1, C: 1, N: 0, P: 1 },
+    tag: "ปากแข็ง ใจนุ่ม",
+    desc: "คุณตรง ห้าว ไม่กลัวการปะทะ และไม่ถูกกับแผนหรือกฎเท่าไหร่ ทำตามสัญชาตญาณเป็นหลัก ภายนอกดูแข็ง แต่พอไว้ใจใครแล้วจะปกป้องเขาสุดตัว",
+    good: "กล้า จริง ภักดีต่อเพื่อน",
+    care: "ตั้งกำแพงไว้ก่อนเสมอ" },
+  { name: "Ralsei", from: "Deltarune", v: { E: -1, B: -2, O: 2, T: 0, C: -1, N: 2, P: -1 },
+    tag: "นุ่มนวล และเตรียมพร้อมเสมอ",
+    desc: "คุณสุภาพ เลือกทางสันติก่อนทุกครั้ง เตรียมตัวมาดี และคอยประคองทุกคนในทีม ความต้องการของคนอื่นมักมาก่อนของคุณเอง",
+    good: "ใจเย็น รอบคอบ ช่างดูแล",
+    care: "ยอมคนอื่นจนลืมว่าตัวเองต้องการอะไร" },
+  { name: "Noelle", from: "Deltarune", v: { E: -1, B: -2, O: 1, T: 1, C: -2, N: 1, P: 0 },
+    tag: "ขี้เกรงใจ แต่แกร่งกว่าที่ตัวเองคิด",
+    desc: "คุณเรียบร้อย ขยัน ใจดี กลัวการปะทะและมักเป็นฝ่ายขอโทษก่อน แต่คุณซื่อตรงกับความรู้สึกตัวเอง และมีความกล้าที่ยังรอจังหวะออกมา",
+    good: "รับผิดชอบ เห็นใจคนอื่น จริงใจ",
+    care: "ปฏิเสธคนไม่เป็น" },
+  { name: "Lancer", from: "Deltarune", v: { E: 2, B: 1, O: -2, T: 2, C: 1, N: 0, P: 2 },
+    tag: "สนุกไว้ก่อน จริงใจตลอด",
+    desc: "คุณร่าเริง ซน คิดอะไรก็ทำเลย ไม่มีแผน ไม่มีมาด รู้สึกยังไงก็บอกหมด และผูกมิตรกับคนได้เร็วมาก",
+    good: "ทำให้คนรอบตัวยิ้มได้ เข้ากับคนง่าย",
+    care: "ไม่ค่อยคิดถึงผลที่ตามมา" },
+  { name: "Queen", from: "Deltarune", v: { E: 2, B: 2, O: 0, T: 1, C: 2, N: -1, P: 2 },
+    tag: "มั่นใจแบบไม่ต้องขออนุญาตใคร",
+    desc: "คุณเสียงดัง ตลก มีภาพในหัวชัดว่าอะไรดี และมั่นใจว่ามันดีสำหรับทุกคนด้วย คุณพูดตรง ไม่เก็บอาการ และทำอะไรก็ทำสุด",
+    good: "เด็ดขาด มีพลัง กล้าคิดใหญ่",
+    care: "ตัดสินใจแทนคนอื่นโดยไม่ได้ถาม" },
+  { name: "Berdly", from: "Deltarune", v: { E: 1, B: 1, O: 2, T: -2, C: 1, N: -2, P: -2 },
+    tag: "ต้องเก่งที่สุดในห้อง",
+    desc: "คุณขยัน วางแผน เตรียมตัวมาเสมอ และอยากให้คนเห็นว่าตัวเองเก่ง คุณจริงจังกับการแข่งขัน ส่วนความมั่นใจที่แสดงออก บางทีก็เป็นเกราะ",
+    good: "มุ่งมั่น มีวินัย ไม่กลัวงานหนัก",
+    care: "อยากชนะจนลืมฟังคนอื่น" }
+];
+
+const QUESTIONS = [
+  { q: "งานกลุ่มเริ่มแล้ว แต่ยังไม่มีใครพูดอะไร", a: [
+    { t: "ลุกขึ้นแบ่งงานให้ทุกคนทันที", w: { E: 2, O: 1, C: 1 } },
+    { t: "รอดูก่อน ถ้าไม่มีใครเริ่มจริง ๆ ค่อยเสนอ", w: { E: -1, B: -1 } },
+    { t: "ปล่อยมุกให้บรรยากาศคลายก่อน", w: { P: 2, E: 1 } },
+    { t: "ลงมือทำส่วนของตัวเองไปเงียบ ๆ", w: { E: -2, N: -1 } } ] },
+  { q: "เพื่อนทำพลาดจนงานของทั้งทีมพัง", a: [
+    { t: "บอกตรง ๆ ว่าพลาดตรงไหน", w: { B: 2, T: 1 } },
+    { t: "ปลอบก่อน เรื่องแก้ค่อยว่ากัน", w: { N: 2, B: -1 } },
+    { t: "แก้ให้เงียบ ๆ โดยไม่พูดถึงมัน", w: { T: -1, B: -2, N: 1 } },
+    { t: "แซวให้ขำ แล้วชวนกันแก้", w: { P: 2, N: 1 } } ] },
+  { q: "มีคนวิจารณ์งานคุณแรง ๆ ต่อหน้าคนอื่น", a: [
+    { t: "เถียงกลับตรงนั้นเลย", w: { B: 2, C: 1, E: 1 } },
+    { t: "ยิ้มรับ แล้วกลับไปคิดวนทั้งคืน", w: { C: -2, T: -2 } },
+    { t: "ถามกลับว่าควรแก้ตรงไหน แล้วจดไว้", w: { O: 1, C: 1, P: -1 } },
+    { t: "หัวเราะกลบเกลื่อน แล้วเปลี่ยนเรื่อง", w: { P: 1, T: -2, B: -1 } } ] },
+  { q: "คืนก่อนออกเดินทางไกล", a: [
+    { t: "เช็กลิสต์ครบ จองทุกอย่างไว้ล่วงหน้าแล้ว", w: { O: 2, P: -1 } },
+    { t: "มีแผนคร่าว ๆ ที่เหลือไปว่ากันหน้างาน", w: { O: -1, C: 1 } },
+    { t: "เพิ่งเริ่มเก็บกระเป๋า แต่ก็รอดทุกที", w: { O: -2, P: 1 } },
+    { t: "เช็กว่าเพื่อนร่วมทางเตรียมครบ และเผื่อของให้ด้วย", w: { O: 1, N: 2 } } ] },
+  { q: "วันที่คุณรู้สึกแย่มาก คนรอบตัวจะ…", a: [
+    { t: "รู้ทันที เพราะฉันแสดงออกหมด", w: { T: 2, E: 1 } },
+    { t: "ไม่รู้เลย ฉันทำตัวปกติทุกอย่าง", w: { T: -2, N: -1 } },
+    { t: "รู้เฉพาะคนสนิทที่ฉันเลือกเล่าให้ฟัง", w: { E: -1, T: 1 } },
+    { t: "สังเกตได้ว่าฉันเล่นมุกเยอะกว่าปกติ", w: { P: 2, T: -2 } } ] },
+  { q: "เห็นคนถูกเอาเปรียบต่อหน้าต่อตา", a: [
+    { t: "เข้าไปขวางทันที", w: { B: 2, N: 1, C: 1 } },
+    { t: "รอให้เรื่องจบ แล้วเข้าไปดูแลคนที่โดน", w: { N: 2, B: -1 } },
+    { t: "หาทางช่วยแบบอ้อม ๆ ที่ไม่ต้องปะทะ", w: { B: -1, O: 1, T: -1 } },
+    { t: "อยากช่วย แต่ลังเลว่าจะทำให้แย่ลงไหม", w: { C: -2, B: -2 } } ] },
+  { q: "ได้รับมอบหมายงานที่ไม่เคยทำมาก่อน", a: [
+    { t: "รับเลย มั่นใจว่าทำได้", w: { C: 2, E: 1 } },
+    { t: "รับ แต่กังวล เลยเตรียมตัวหนักมาก", w: { C: -1, O: 2 } },
+    { t: "ลองไปก่อน พังค่อยว่ากัน", w: { O: -2, C: 1, P: 1 } },
+    { t: "ไปถามคนที่เคยทำ หรือขอคนช่วย", w: { C: -1, T: 1 } } ] },
+  { q: "อยู่ในวงสนทนาที่มีแต่คนแปลกหน้า", a: [
+    { t: "เป็นคนเปิดบทสนทนา", w: { E: 2, C: 1 } },
+    { t: "ฟังมากกว่าพูด", w: { E: -2 } },
+    { t: "มองหาคนที่ถูกทิ้งไว้ แล้วชวนเขาคุย", w: { N: 2, T: 1 } },
+    { t: "พูดน้อย แต่หยอดมุกเป็นระยะ", w: { P: 2, E: -1 } } ] },
+  { q: "ต้องตัดสินใจเรื่องสำคัญ", a: [
+    { t: "เชื่อสัญชาตญาณ ตัดสินใจเร็ว", w: { O: -1, C: 2, B: 1 } },
+    { t: "ชั่งข้อดีข้อเสียอย่างละเอียด", w: { O: 2, P: -1 } },
+    { t: "คิดถึงผลกระทบต่อคนอื่นก่อน", w: { N: 2 } },
+    { t: "ผัดไปเรื่อย ๆ จนถึงเส้นตาย", w: { O: -2, C: -1 } } ] },
+  { q: "มีคนมาขอให้ช่วย ตอนที่คุณยุ่งมาก", a: [
+    { t: "วางงานตัวเอง ไปช่วยก่อน", w: { N: 2, O: -1 } },
+    { t: "บอกตรง ๆ ว่าตอนนี้ไม่ว่าง", w: { B: 1, N: -2, C: 1 } },
+    { t: "รับปากทั้งที่ไม่ไหว แล้วเครียดเอง", w: { N: 1, B: -2, C: -1 } },
+    { t: "ช่วยเฉพาะส่วนสำคัญ แล้วกลับมาทำงานต่อ", w: { O: 1, C: 1 } } ] },
+  { q: "ทำเรื่องใหญ่สำเร็จ", a: [
+    { t: "ประกาศให้ทุกคนรู้", w: { E: 2, C: 2, T: 1 } },
+    { t: "ดีใจเงียบ ๆ คนเดียว", w: { E: -2, T: -1 } },
+    { t: "ยกเครดิตให้คนที่ช่วย", w: { N: 2, C: -1 } },
+    { t: "ทำเป็นเฉย แต่ในใจลิงโลด", w: { T: -2, P: 1 } } ] },
+  { q: "เจอกฎที่คุณคิดว่าไม่สมเหตุสมผล", a: [
+    { t: "ทำตาม เพราะกฎก็คือกฎ", w: { O: 2, B: -1 } },
+    { t: "ไม่ทำตาม และไม่ปิดบังด้วย", w: { B: 2, O: -2 } },
+    { t: "ทำตามไปก่อน แล้วไปเสนอให้แก้", w: { O: 1, B: 1, C: 1 } },
+    { t: "หาช่องโหว่แบบเนียน ๆ", w: { P: 1, O: -1, T: -1 } } ] },
+  { q: "ทะเลาะกับคนสนิท", a: [
+    { t: "เคลียร์กันตรงนั้น แม้จะเสียงดัง", w: { B: 2, T: 2 } },
+    { t: "ขอโทษก่อน แม้ไม่แน่ใจว่าตัวเองผิด", w: { B: -2, N: 1, C: -1 } },
+    { t: "หายไปเงียบ ๆ จนกว่าจะใจเย็น", w: { T: -1, E: -1 } },
+    { t: "ทำเหมือนไม่มีอะไรเกิดขึ้น", w: { T: -2, B: -1, P: 1 } } ] },
+  { q: "รู้ตัวว่าทำพลาดเอง", a: [
+    { t: "ยอมรับออกมาดัง ๆ แล้วไปต่อ", w: { T: 2, C: 1 } },
+    { t: "โทษตัวเองอยู่นาน", w: { C: -2, P: -1 } },
+    { t: "รีบแก้ให้เสร็จก่อนใครรู้", w: { T: -2, O: 1 } },
+    { t: "เก็บไว้เล่าเป็นเรื่องตลก", w: { P: 2, C: 1 } } ] }
+];
+
+function axisMax() {
+  const m = {};
+  AXES.forEach(a => { m[a.k] = 0; });
+  QUESTIONS.forEach(q => AXES.forEach(a => {
+    m[a.k] += Math.max(...q.a.map(o => Math.abs(o.w[a.k] || 0)));
+  }));
+  return m;
+}
+
+/* answers: array of option indexes, one per question */
+function score(answers) {
+  const sum = {}, max = axisMax();
+  AXES.forEach(a => { sum[a.k] = 0; });
+  answers.forEach((ai, qi) => {
+    const w = QUESTIONS[qi].a[ai].w;
+    for (const k in w) sum[k] += w[k];
+  });
+  /* centre each axis on the average of its options, so no trait is favoured by the wording */
+  const mid = {};
+  AXES.forEach(a => {
+    mid[a.k] = QUESTIONS.reduce((s, q) => s + q.a.reduce((t, o) => t + (o.w[a.k] || 0), 0) / q.a.length, 0);
+  });
+  const profile = {};
+  AXES.forEach(a => {
+    const v = max[a.k] ? (sum[a.k] - mid[a.k]) / max[a.k] : 0;
+    profile[a.k] = Math.max(-1, Math.min(1, v));   // -1 … 1
+  });
+
+  const mag = v => Math.sqrt(AXES.reduce((s, a) => s + v[a.k] * v[a.k], 0)) || 1;
+  const pm = mag(profile);
+  const ranked = CHARACTERS.map(c => {
+    const dot = AXES.reduce((s, a) => s + profile[a.k] * c.v[a.k], 0);
+    const cos = dot / (pm * mag(c.v));
+    return { c, pct: Math.round((cos + 1) * 50) };
+  }).sort((x, y) => y.pct - x.pct);
+  return { profile, ranked };
+}
+</script>
+
+<script>
+(function () {
+  const app = document.getElementById("app");
+  let step = 0;
+  let answers = [];
+
+  function el(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    if (attrs) for (const k in attrs) {
+      if (k === "class") n.className = attrs[k];
+      else if (k === "on") for (const ev in attrs.on) n.addEventListener(ev, attrs.on[ev]);
+      else if (attrs[k] !== false && attrs[k] != null) n.setAttribute(k, attrs[k]);
+    }
+    kids.flat().forEach(c => { if (c != null) n.append(c); });
+    return n;
+  }
+  function show(...nodes) {
+    app.replaceChildren(...nodes);
+    window.scrollTo(0, 0);
+  }
+
+  function intro() {
+    step = 0; answers = [];
+    show(
+      el("div", { class: "box intro" },
+        el("h1", null, "คุณเหมือนใครใน", el("span", { class: "games" }, "Undertale / Deltarune")),
+        el("p", null, "14 สถานการณ์ วัดจากวิธีที่คุณรับมือกับเรื่องต่าง ๆ ไม่ใช่จากสิ่งที่คุณชอบ"),
+        el("p", { class: "rule" }, "เลือกข้อที่ใกล้กับสิ่งที่คุณทำจริง ไม่ใช่สิ่งที่อยากเป็น"),
+        el("button", { class: "btn", type: "button", on: { click: question } }, "เริ่มทำแบบทดสอบ")
+      ),
+      el("p", { class: "note" }, "แบบทดสอบจากแฟนเกม ทำเพื่อความสนุก และไม่มีสปอยล์เนื้อเรื่อง")
+    );
+  }
+
+  function question() {
+    const q = QUESTIONS[step];
+    const bar = el("div", { class: "progress", role: "img", "aria-label": "ข้อ " + (step + 1) + " จาก " + QUESTIONS.length },
+      QUESTIONS.map((_, i) => el("i", { class: i < step ? "done" : i === step ? "now" : "" })));
+    const heading = el("h2", { class: "question", tabindex: "-1" }, q.q);
+    const list = el("ul", { class: "choices" },
+      q.a.map((o, i) => el("li", null,
+        el("button", {
+          class: "choice" + (answers[step] === i ? " picked" : ""), type: "button",
+          on: { click: () => pick(i) }
+        }, el("span", null, o.t)))));
+    const back = el("button", { class: "back", type: "button", hidden: step === 0 ? "" : false,
+      on: { click: () => { step--; question(); } } }, "ย้อนกลับไปข้อก่อนหน้า");
+    show(bar,
+      el("div", { class: "box" },
+        el("p", { class: "count" }, "ข้อ " + (step + 1) + " จาก " + QUESTIONS.length),
+        heading, list),
+      back);
+    heading.focus({ preventScroll: true });
+  }
+
+  function pick(i) {
+    answers[step] = i;
+    if (step < QUESTIONS.length - 1) { step++; question(); }
+    else result();
+  }
+
+  function pos(v) { return Math.max(0, Math.min(100, (v + 1) * 50)) + "%"; }
+
+  function result() {
+    const { profile, ranked } = score(answers);
+    const top = ranked[0], c = top.c;
+    const status = el("p", { class: "status", role: "status" });
+
+    const summary = "ฉันทำแบบทดสอบแล้วได้ " + c.name + " (" + c.from + ") ตรงกัน " + top.pct + "% “" + c.tag + "”";
+    function copy() {
+      const done = () => { status.textContent = "คัดลอกผลลัพธ์แล้ว"; };
+      const fail = () => { status.textContent = "คัดลอกอัตโนมัติไม่ได้ ผลลัพธ์ของคุณคือ: " + summary; };
+      try { navigator.clipboard.writeText(summary).then(done, fail); } catch (e) { fail(); }
+    }
+
+    show(
+      el("div", { class: "box reveal" },
+        el("p", { class: "lead" }, "นิสัยของคุณใกล้กับ"),
+        el("h1", { class: "name" }, c.name),
+        el("p", { class: "from" }, c.from + " ตรงกัน " + top.pct + "%"),
+        el("p", { class: "tagline" }, c.tag),
+        el("p", { class: "desc" }, c.desc),
+        el("div", { class: "pair" },
+          el("p", { class: "good" }, el("b", null, "จุดแข็ง "), c.good),
+          el("p", { class: "care" }, el("b", null, "ข้อควรระวัง "), c.care))
+      ),
+      el("section", { class: "block" },
+        el("h2", null, "นิสัยของคุณทั้ง 7 ด้าน"),
+        el("p", { class: "legend" },
+          el("span", { class: "you" }, "คุณ"),
+          el("span", { class: "them" }, c.name)),
+        AXES.map(a => el("div", { class: "axis" },
+          el("div", { class: "poles" }, el("span", null, a.lo), el("span", null, a.hi)),
+          el("div", { class: "track" },
+            el("span", { class: "dot them", style: "left:" + pos(c.v[a.k] / 2) }),
+            el("span", { class: "dot you", style: "left:" + pos(profile[a.k]) }))))
+      ),
+      el("section", { class: "block" },
+        el("h2", null, "ตัวละครที่ใกล้เคียงรองลงมา"),
+        el("ul", { class: "others" },
+          ranked.slice(1, 4).map(r => el("li", null,
+            el("span", { class: "who" }, r.c.name, el("small", null, r.c.from)),
+            el("span", { class: "pct" }, r.pct + "%"))))
+      ),
+      el("div", { class: "actions" },
+        el("button", { class: "btn", type: "button", on: { click: intro } }, "ทำแบบทดสอบอีกครั้ง"),
+        el("button", { class: "btn quiet", type: "button", on: { click: copy } }, "คัดลอกผลลัพธ์")),
+      status
+    );
+  }
+
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const n = Number(e.key);
+    const buttons = app.querySelectorAll(".choice");
+    if (buttons.length && n >= 1 && n <= buttons.length) buttons[n - 1].click();
+  });
+
+  intro();
+})();
+</script>
+</body>
+</html>
